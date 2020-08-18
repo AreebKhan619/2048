@@ -1,0 +1,85 @@
+.outer-box{
+	width: 600px;
+	height: 600px;
+	/* background: grey; */
+	background: #80808099;
+	display: flex;
+	flex-wrap: wrap;
+}
+
+.block{
+	/* background-color: lightgrey; */
+	width: 150px;
+	height: 150px;
+	/* border: 1px solid black; */
+	padding: 5px;
+	box-sizing: border-box;
+}
+
+.block>.inner{
+	background: lightgrey;
+	/* border: 1px solid black; */
+	height: 100%;
+	width: 100%;
+	border-radius: 10px;
+	display: flex;
+	justify-content: center;
+    align-items: center;
+    font-size: 65px;
+}
+
+.block.exists>.inner._2{
+	background-color: white;
+	color: #757070;
+}
+
+.block.exists>.inner._4{
+	background-color: #e6ddb5;
+	color: #757070;
+}
+
+.block.exists>.inner._8{
+	background-color: #e6a24e;
+	color: white;
+}
+
+.block.exists>.inner._16{
+	background-color: #ff920c;
+	color: white;
+}
+
+.block.exists>.inner._32{
+	background-color: #FF5722;
+	color: white;
+}
+
+
+.block.exists>.inner._64{
+	background-color: #e23600;
+	color: white;
+}
+
+.block.exists>.inner._128{
+	background-color: #FFEB3B;
+	color: white;
+}
+
+.block.exists>.inner._256{
+	background-color: #FFC107;
+	color: white;
+}
+
+.block.exists>.inner._512{
+	background-color: #FF9800;
+	color: white;
+}
+
+.block.exists>.inner._1024{
+	background-color: #FFCA28;
+	color: white;
+}
+
+.block.exists>.inner._2048{
+	background-color: #795548;
+	color: white;
+}
