@@ -1,4 +1,4 @@
-import React, { Component, createRef } from "react";
+import React, { Component } from "react";
 import "./TwentyFourtyEight.css";
 class TwentyFourtyEight extends Component {
   // the game will be of 4x4
@@ -6,12 +6,18 @@ class TwentyFourtyEight extends Component {
     super(props);
     this.myRef = React.createRef();
     this.state = {
-      // matrix: [
-      //   [2, 4, 512, null],
-      //   [2, 512, 2048, null],
-      //   [4, 128, 4, null],
-      //   [2, 4, 2, null]
-      // ]
+      matrix: [
+        [null, null, null,null],
+        [null, null, null,null],
+        [null, null, null,null],
+        [null, null, null,null]
+      ],
+      lastMove: [
+        [null, null, null,null],
+        [null, null, null,null],
+        [null, null, null,null],
+        [null, null, null,null]
+      ]
 
       // matrix: [
       //   [2, 4, null, null],
@@ -22,12 +28,12 @@ class TwentyFourtyEight extends Component {
 
       // very important below
 
-      matrix: [
-        [4, null, 2, null],
-        [4, 128, null, null],
-        [null, 512, 2, null],
-        [4, null, 2, null]
-      ]
+      // matrix: [
+      //   [4, null, 2, null],
+      //   [4, 128, null, null],
+      //   [null, 512, 2, null],
+      //   [4, null, 2, null]
+      // ]
 
       // matrix: [
       //   [4, null, 2, null],
@@ -45,16 +51,26 @@ class TwentyFourtyEight extends Component {
     };
   }
 
+  componentDidUpdate(old,niu){
+    console.log(old, niu)
+  }
+
   componentDidMount() {
     this.myRef.current.focus();
+    let m = this.state.matrix.slice()
+    this.insertNew(m)
+    this.insertNew(m)
+    this.setState({
+      matrix: m,
+      lastMove: m.slice()
+    })
   }
 
   move = (m, el, dir) => {
     let r = el.rIndex;
     let c = el.cIndex;
-    let v = el.value;
+    // let v = el.value;
 
-    // console.log(r,c,v)
 
     if (dir === "up" && r !== 0) {
       //shift logic
@@ -97,7 +113,6 @@ class TwentyFourtyEight extends Component {
   };
 
   merge = (mat, ind, dir) => {
-    console.log(ind);
 
     let m = mat.slice();
     let arrIndices = [];
@@ -105,8 +120,6 @@ class TwentyFourtyEight extends Component {
 
     if (dir === "up" || dir === "down") {
       ind.map((currEl, i) => {
-        // console.log(currEl)
-        // console.log("having cIndex",currEl)
         if (!arrIndices.includes(i)) {
           t = ind.filter((x, j) => {
             if (currEl.cIndex === x.cIndex) {
@@ -118,7 +131,6 @@ class TwentyFourtyEight extends Component {
           if (dir === "up") {
             let index = 0;
             let lastIndex;
-            console.log(t)
             t.map((currEl, i) => {
               let next = t[i + 1];
               if (i !== lastIndex) {
@@ -137,10 +149,12 @@ class TwentyFourtyEight extends Component {
                       index = index + 1;
                     }
                 } else {
-                  // console.log("INDEX VALUE VALLED",index,"CORRESPONDING VALUE", m[currEl.rIndex][currEl.cIndex])
                   m[currEl.rIndex][currEl.cIndex] = null;
                   m[index][currEl.cIndex] = currEl.value;
-                  m[index+1][currEl.cIndex] = null;
+
+                  if(m[index+1]){
+                    m[index+1][currEl.cIndex] = null;
+                  }
 
                   index = index + 1;
                   lastIndex = null
@@ -152,18 +166,14 @@ class TwentyFourtyEight extends Component {
               matrix: m
             });
           } else if (dir === "down") {
-            console.log("down");
             let index = 3; //max-rows
             let lastIndex;
 
             t.map((currEl, i) => {
               let next = t[i + 1];
               if (next) {
-                console.log(next);
                 if (i !== lastIndex) {
                   if (currEl.value === next.value) {
-                    // console.log(currEl.value, next.value)
-                    console.log(index, currEl.cIndex);
                     m[index][currEl.cIndex] = 2 * currEl.value;
                     m[next.rIndex][next.cIndex] = null;
                     m[index - 1][currEl.cIndex] = null;
@@ -173,7 +183,6 @@ class TwentyFourtyEight extends Component {
                     m[index][currEl.cIndex] = currEl.value;
 
                     m[index - 1][currEl.cIndex] = null;
-                    // m[currEl.rIndex][currEl.cIndex]=null
                     index = index - 1;
                   }
                 }
@@ -181,12 +190,13 @@ class TwentyFourtyEight extends Component {
                 if (i !== lastIndex) {
                   m[currEl.rIndex][currEl.cIndex] = null;
                   m[index][currEl.cIndex] = currEl.value;
-                  m[index-1][currEl.cIndex] = null;
+                  if(m[index-1]){
+                    m[index-1][currEl.cIndex] = null;
+                  }
 
                   index = index - 1;
                 }
               }
-              console.log(lastIndex);
             });
 
             // this.setState({
@@ -194,6 +204,7 @@ class TwentyFourtyEight extends Component {
             // });
           }
         }
+        return null
       });
     } else if (dir === "right" || dir === "left") {
       if (dir === "right") {
@@ -252,6 +263,64 @@ class TwentyFourtyEight extends Component {
     }
   };
 
+  random = (min, max) => { // min and max included 
+    return Math.floor(Math.random() * (max - min + 1) + min);
+  }
+
+
+  // someFunction = (subArray) => {
+  //   let res
+  //   res = subArray.some((value)=>{
+  //     return !value
+  //   })
+  //   return res
+  //  }
+   
+   containsNull = (array) => {
+     let arr = array.map((subArray)=>{
+      let res
+      res = subArray.some((value)=>{
+        return !value
+      })
+      return res
+     })
+     if(arr.includes(true)){
+       return true
+     }
+     else{
+       return false
+     }
+   }
+
+  
+  
+
+  insertNew = (m) => {
+
+
+    if(this.containsNull(m)){
+      let value = Math.random() < 0.9 ? 2 : 4;
+
+      let rowIndex = this.random(0,3)
+      let colIndex = this.random(0,3)
+      while(m[rowIndex][colIndex]){
+        rowIndex = this.random(0,3)
+        colIndex = this.random(0,3)
+      }
+  
+      m[rowIndex][colIndex]=value
+      
+    }
+ 
+  }
+
+
+  undoAction = () => {
+    this.setState({
+      matrix: this.state.lastMove
+    })
+  }
+
   handleKeyDown = e => {
     const { key } = e;
 
@@ -261,27 +330,30 @@ class TwentyFourtyEight extends Component {
         if (element !== null) {
           ind.push({ rIndex: i, cIndex: j, value: element });
         }
+        return null
       });
+      return null
     });
 
-    // console.log(ind);
 
     let m = this.state.matrix.slice();
+    let lastMove =  this.state.matrix.slice()
 
     if (key === "ArrowLeft") {
-      console.log("Left has been pressed");
       ind.map(s => {
         this.move(m, s, "left");
       });
 
       this.merge(m, ind, "left");
 
+      this.insertNew(m)
+
       this.setState({
+        lastMove,
         matrix: m
       });
     }
     if (key === "ArrowUp") {
-      // console.log("Up has been pressed");
 
       ind.map(s => {
         this.move(m, s, "up");
@@ -289,14 +361,15 @@ class TwentyFourtyEight extends Component {
 
       this.merge(m, ind, "up");
 
+      this.insertNew(m)
+
+
       this.setState({
+        lastMove,
         matrix: m
       });
     }
     if (key === "ArrowRight") {
-      console.log("Right has been pressed");
-
-      console.log(ind);
 
       let colSorted = ind.slice().sort((a, b) => {
         if (a.cIndex > b.cIndex) {
@@ -310,20 +383,19 @@ class TwentyFourtyEight extends Component {
         this.move(m, s, "right");
       });
 
-      // console.log(colSorted);
-      // console.log(colSorted);
       this.merge(m, colSorted, "right");
 
       // this.merge(m, ind, "right");
 
+      this.insertNew(m)
+
+
       this.setState({
+        lastMove,
         matrix: m
       });
     }
     if (key === "ArrowDown") {
-      console.log("Down has been pressed");
-
-      // this.move(m, ind[2], "down");
 
       ind
         .slice()
@@ -334,7 +406,11 @@ class TwentyFourtyEight extends Component {
 
       this.merge(m, ind.slice().reverse(), "down");
 
+      this.insertNew(m)
+
+
       this.setState({
+        lastMove,
         matrix: m
       });
     }
@@ -342,13 +418,20 @@ class TwentyFourtyEight extends Component {
 
   render() {
     return (
-      <div style={{ display: "flex", justifyContent: "center" }}>
+      <div style={{ display: "flex", justifyContent: "center", alignItems: 'center', flexDirection: 'column' }}>
         <div
           ref={this.myRef}
           className="outer-box"
           onKeyDown={this.handleKeyDown}
           tabIndex="0"
         >
+
+       {this.state.isGameWon && (
+          <div className="game-won">
+          Game Won!
+        </div>
+       )}
+
           {this.state.matrix.map((row, i) =>
             row.map((element, j) => (
               <div
@@ -369,6 +452,12 @@ class TwentyFourtyEight extends Component {
             ))
           )}
         </div>
+     
+        <button onClick={this.undoAction}>Undo</button>
+        <button onClick={()=>{this.setState({
+          isGameWon: true
+        })}}>Win Game</button>
+
       </div>
     );
   }

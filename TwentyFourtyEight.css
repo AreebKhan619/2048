@@ -5,6 +5,7 @@
 	background: #80808099;
 	display: flex;
 	flex-wrap: wrap;
+	position: relative;
 }
 
 .block{
@@ -39,28 +40,28 @@
 }
 
 .block.exists>.inner._8{
-	background-color: #e6a24e;
+	background-color: #f5ba73;
 	color: white;
 }
 
 .block.exists>.inner._16{
-	background-color: #ff920c;
+	background-color: #e08c5f;
 	color: white;
 }
 
 .block.exists>.inner._32{
-	background-color: #FF5722;
+	background-color: #fb774d;
 	color: white;
 }
 
 
 .block.exists>.inner._64{
-	background-color: #e23600;
+	background-color: #F44336;
 	color: white;
 }
 
 .block.exists>.inner._128{
-	background-color: #FFEB3B;
+	background-color: #f5d575;
 	color: white;
 }
 
@@ -82,4 +83,22 @@
 .block.exists>.inner._2048{
 	background-color: #795548;
 	color: white;
+	font-size: 60px;
+}
+
+.block.exists>.inner._4096{
+	background-color: #8BC34A;
+	color: white;
+	font-size: 60px;
+}
+
+.game-won{
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    background: #ffc10775;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 100px;
 }
