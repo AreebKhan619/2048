@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import "./TwentyFourtyEight.css";
+import UndoIcon from "./undo.svg"
 class TwentyFourtyEight extends Component {
   // the game will be of 4x4
   constructor(props) {
@@ -28,7 +29,7 @@ class TwentyFourtyEight extends Component {
   }
 
   componentDidMount() {
-    this.myRef.current.focus();
+    // this.myRef.current.focus();
     this.startOver()
   }
 
@@ -47,6 +48,7 @@ class TwentyFourtyEight extends Component {
       score: 0,
       optedForRestart: false
     });
+    this.myRef.current.focus();
   }
 
   move = (m, el, dir) => {
@@ -290,6 +292,7 @@ class TwentyFourtyEight extends Component {
     this.setState({
       matrix: this.state.prev
     });
+    this.myRef.current.focus();
   };
 
  
@@ -400,7 +403,9 @@ class TwentyFourtyEight extends Component {
 
   render() {
     return (
+      <>
       <div
+      onFocus={()=>this.myRef.current.focus()}
         style={{
           display: "flex",
           justifyContent: "center",
@@ -416,6 +421,8 @@ class TwentyFourtyEight extends Component {
 
         <div
           ref={this.myRef}
+          onBlur={()=>this.setState({focus: false})}
+          onFocus={()=>this.setState({focus: true})}
           className="outer-box"
           onKeyDown={e => this.handleKeyDown(e)}
           tabIndex="0"
@@ -484,6 +491,10 @@ class TwentyFourtyEight extends Component {
           </button> */}
         </div>
       </div>
+          {!this.state.focus && (
+            <p style={{textAlign: 'center'}}>Tap on any block to continue playing</p>
+          )}
+          </>
     );
   }
 }
