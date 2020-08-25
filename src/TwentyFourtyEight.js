@@ -33,7 +33,12 @@ class TwentyFourtyEight extends Component {
   componentDidMount() {
     // this.myRef.current.focus();
     this.startOver()
+    window.addEventListener("beforeunload", this.onUnload);
   }
+
+  componentWillUnmount() {
+    window.removeEventListener("beforeunload", this.onUnload);
+}
 
   startOver = () => {
     let m = [
@@ -418,6 +423,14 @@ class TwentyFourtyEight extends Component {
       }
     }
   };
+
+  onUnload = e => { // the method that will be used for both add and remove event
+    e.preventDefault();
+    e.returnValue = '';
+ }
+
+
+
 
   render() {
     return (
