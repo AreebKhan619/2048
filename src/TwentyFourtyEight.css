@@ -36,22 +36,31 @@
 }
 
 @media screen and (max-width: 764px){
-  /* .block > .inner{
-    background-color: black;
-  } */
+  .block > .inner{
+    font-size: 13vw;
+  }
 
-  /* .btn-group, .score-container{
-    display: none!important;
-  } */
+  .parent-container{
+    flex-direction: column;
+  }
+
+  .btn-group{
+    order: 0;
+    display: flex;
+  }
 
   .outer-box{
     width: 100vw;
     height: 100vw;
+    max-height: 80vh;
+    max-width: 80vh;
   }
 
   .block{
     width: 25vw;
     height: 25vw;
+    max-width: 20vh;
+    max-height: 20vh;
   }
 }
 

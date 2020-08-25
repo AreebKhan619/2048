@@ -1,6 +1,8 @@
 import React, { Component } from "react";
 import "./TwentyFourtyEight.css";
-import UndoIcon from "./undo.svg"
+import { Swipeable } from 'react-swipeable'
+
+
 class TwentyFourtyEight extends Component {
   // the game will be of 4x4
   constructor(props) {
@@ -295,6 +297,22 @@ class TwentyFourtyEight extends Component {
     this.myRef.current.focus();
   };
 
+
+  swipeToKeyboardEmulator = (e) => {
+    const dir = e.dir.toLowerCase()
+    if(dir==="left"){
+      this.handleKeyDown({key: "ArrowLeft"})
+    } 
+    else if(dir==="right"){
+      this.handleKeyDown({key: "ArrowRight"})
+    }
+    else if(dir==="up"){
+      this.handleKeyDown({key: "ArrowUp"})
+    }
+    else if(dir==="down"){
+      this.handleKeyDown({key: "ArrowDown"})
+    }
+  }
  
 
   handleKeyDown = async e => {
@@ -404,15 +422,10 @@ class TwentyFourtyEight extends Component {
   render() {
     return (
       <>
+      
       <div
       className="parent-container"
       onFocus={()=>this.myRef.current.focus()}
-        // style={{
-        //   display: "flex",
-        //   justifyContent: "center",
-        //   alignItems: "center"
-        //   // flexDirection: "column"
-        // }}
       >
 
         <div className="btn-group">
@@ -420,6 +433,7 @@ class TwentyFourtyEight extends Component {
         <button onClick={()=>this.setState({optedForRestart: true})} className="game-btn refresh-btn" title="Reset the game"/>
         </div>
 
+        <Swipeable onSwiped={(eventData) => this.swipeToKeyboardEmulator(eventData)}>
         <div
           ref={this.myRef}
           onBlur={()=>this.setState({focus: false})}
@@ -464,6 +478,8 @@ class TwentyFourtyEight extends Component {
           )}
         </div>
 
+</Swipeable>
+        
         <div
         className="score-container"
           style={{
