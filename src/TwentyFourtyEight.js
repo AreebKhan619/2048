@@ -433,7 +433,7 @@ class TwentyFourtyEight extends Component {
         <button onClick={()=>this.setState({optedForRestart: true})} className="game-btn refresh-btn" title="Reset the game"/>
         </div>
 
-        <Swipeable onSwiped={(eventData) => this.swipeToKeyboardEmulator(eventData)}>
+        <Swipeable onSwiped={(eventData) => this.swipeToKeyboardEmulator(eventData)} preventDefaultTouchmoveEvent={true}>
         <div
           ref={this.myRef}
           onBlur={()=>this.setState({focus: false})}
