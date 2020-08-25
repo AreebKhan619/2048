@@ -405,16 +405,17 @@ class TwentyFourtyEight extends Component {
     return (
       <>
       <div
+      className="parent-container"
       onFocus={()=>this.myRef.current.focus()}
-        style={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center"
-          // flexDirection: "column"
-        }}
+        // style={{
+        //   display: "flex",
+        //   justifyContent: "center",
+        //   alignItems: "center"
+        //   // flexDirection: "column"
+        // }}
       >
 
-        <div>
+        <div className="btn-group">
         <button onClick={this.undoAction} className="game-btn undo-btn" title="Undo last move" />
         <button onClick={()=>this.setState({optedForRestart: true})} className="game-btn refresh-btn" title="Reset the game"/>
         </div>
@@ -464,6 +465,7 @@ class TwentyFourtyEight extends Component {
         </div>
 
         <div
+        className="score-container"
           style={{
             display: "flex",
             flexDirection: "column",

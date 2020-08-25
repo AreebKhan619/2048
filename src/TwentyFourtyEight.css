@@ -8,6 +8,12 @@
   position: relative;
 }
 
+.parent-container{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
 .block {
   /* background-color: lightgrey; */
   width: 150px;
@@ -26,7 +32,27 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  font-size: 65px;
+  font-size: 5vw;
+}
+
+@media screen and (max-width: 764px){
+  /* .block > .inner{
+    background-color: black;
+  } */
+
+  /* .btn-group, .score-container{
+    display: none!important;
+  } */
+
+  .outer-box{
+    width: 100vw;
+    height: 100vw;
+  }
+
+  .block{
+    width: 25vw;
+    height: 25vw;
+  }
 }
 
 .block.exists > .inner._2 {
@@ -149,3 +175,6 @@
 	background-color: black;
 	color: white;
 }
+
+
+
