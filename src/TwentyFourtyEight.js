@@ -17,8 +17,7 @@ class TwentyFourtyEight extends Component {
         [null, null, null, null]
       ],
       prev: [],
-      score: 0
-
+      score: 0,
       // very important below
 
       // matrix: [
@@ -53,7 +52,9 @@ class TwentyFourtyEight extends Component {
       matrix: m,
       prev: m,
       score: 0,
-      optedForRestart: false
+      optedForRestart: false,
+      isGameWon: false,
+      continue: false
     });
     this.myRef.current.focus();
   }
@@ -129,6 +130,11 @@ class TwentyFourtyEight extends Component {
                   if (currEl.value === next.value) {
                     m[index][currEl.cIndex] = 2 * currEl.value;
                     m[currEl.rIndex][currEl.cIndex] = 2 * currEl.value; // might seem repetitive, but is needed
+                    if(2*currEl.value===2048){
+                      this.setState({
+                        isGameWon: true
+                      })
+                    }
                     score = score + 2*currEl.value
                     m[next.rIndex][next.cIndex] = null;
                     m[index + 1][currEl.cIndex] = null; // might seem repetitive, but is needed
@@ -164,6 +170,11 @@ class TwentyFourtyEight extends Component {
                   if (currEl.value === next.value) {
                     m[index][currEl.cIndex] = 2 * currEl.value;
                     score = score + 2*currEl.value
+                    if(2*currEl.value===2048){
+                      this.setState({
+                        isGameWon: true
+                      })
+                    }
                     m[next.rIndex][next.cIndex] = null;
                     m[index - 1][currEl.cIndex] = null;
                     index = index - 1;
@@ -196,6 +207,11 @@ class TwentyFourtyEight extends Component {
           for (let j = m[i].length - 1; j >= 0; j--) {
             if (j !== 0 && m[i][j]) {
               if (m[i][j] === m[i][j - 1]) {
+                if(2*m[i][j]===2048){
+                  this.setState({
+                    isGameWon: true
+                  })
+                }
                 m[i][j] = 2 * m[i][j];
                 score = score + 2*m[i][j]
                 m[i][j - 1] = null;
@@ -223,6 +239,11 @@ class TwentyFourtyEight extends Component {
           for (let j = 0; j <= m[i].length - 1; j++) {
             if (j !== m[i].length && m[i][j]) {
               if (m[i][j] === m[i][j + 1]) {
+                if(2*m[i][j]===2048){
+                  this.setState({
+                    isGameWon: true
+                  })
+                }
                 m[i][j] = 2 * m[i][j];
                 score = score + 2*m[i][j]
                 m[i][j + 1] = null;
@@ -455,7 +476,14 @@ class TwentyFourtyEight extends Component {
           onKeyDown={e => this.handleKeyDown(e)}
           tabIndex="0"
         >
-          {this.state.isGameWon && <div className="game-won">Game Won!</div>}
+          {this.state.isGameWon && !this.state.continue && <div className="game-won">
+            <div>
+            Game Won!
+            </div>
+            <div className="game-reset option" onClick={()=>this.setState({continue: true})} style={{fontSize: '20px',fontWeight: '600'}}>
+            Continue
+            </div>
+            </div>}
 
           {this.state.isGameOver && <div className="game-won">Game Over!</div>}
 
