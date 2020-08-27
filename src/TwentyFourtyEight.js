@@ -1,7 +1,25 @@
 import React, { Component } from "react";
 import "./TwentyFourtyEight.css";
-import { Swipeable } from 'react-swipeable'
+import { Swipeable } from "react-swipeable";
+import {
+  ParentContainer,
+  BtnGroup,
+  OuterBox,
+  ScoreContainer,
+  ActualScore
+} from "./Styles";
 
+// classic = 4x4
+// big = 5x5
+// bigger = 6x6
+// huge = 8x8
+
+const gameObj = {
+  4: "_classic",
+  5: "_big",
+  6: "_bigger",
+  8: "_huge"
+};
 
 class TwentyFourtyEight extends Component {
   // the game will be of 4x4
@@ -10,7 +28,11 @@ class TwentyFourtyEight extends Component {
     this.myRef = React.createRef();
     this.state = {
       // matrix: [],
+      game: {
+        size: "_classic"
+      },
       matrix: [
+        [null, null, null, null],
         [null, null, null, null],
         [null, null, null, null],
         [null, null, null, null],
@@ -18,6 +40,8 @@ class TwentyFourtyEight extends Component {
       ],
       prev: [],
       score: 0,
+      gridChange: false,
+      optedForRestart: false
       // very important below
 
       // matrix: [
@@ -31,35 +55,67 @@ class TwentyFourtyEight extends Component {
 
   componentDidMount() {
     // this.myRef.current.focus();
-    this.startOver()
-    window.addEventListener("beforeunload", this.onUnload);
+    this.startOver(4);
+    // window.addEventListener("beforeunload", this.onUnload);
   }
 
   componentWillUnmount() {
     window.removeEventListener("beforeunload", this.onUnload);
-}
+  }
 
-  startOver = () => {
-    let m = [
-      [null, null, null, null],
-      [null, null, null, null],
-      [null, null, null, null],
-      [null, null, null, null]
-    ];
+  changeGrid = num => {
+    if (gameObj[num] !== this.state.game.size) {
+      this.startOver(num);
+    }
+    this.setState({
+      gridChange: false
+    });
+  };
+
+  startOver = sizeArg => {
+    let size = sizeArg ? sizeArg : this.state.game.size;
+    console.log(size);
+
+    // const gameObj = {
+    //   4: "_classic",
+    //   5: "_big",
+    //   6: "_bigger",
+    //   8: "_huge"
+    // };
+
+    let m = [];
+    let t = Array(size).fill(null);
+    for (let i = 0; i < size; i++) {
+      m.push(t.slice());
+    }
+    // let m = [
+    //   [null, null, null, null,null],
+    //   [null, null, null, null,null],
+    //   [null, null, null, null,null],
+    //   [null, null, null, null,null],
+    //   [null, null, null, null,null],
+    // ];
     this.insertNew(m, true);
     this.insertNew(m, true);
     this.setState({
       matrix: m,
       prev: m,
       score: 0,
+      game: {
+        ...this.state.game,
+        size: gameObj[size]
+      },
       optedForRestart: false,
       isGameWon: false,
       continue: false
     });
     this.myRef.current.focus();
-  }
+  };
 
   move = (m, el, dir) => {
+    // both rows and columns will be equal
+    const maxValue = m.length - 1;
+
     let r = el.rIndex;
     let c = el.cIndex;
     // let v = el.value;
@@ -77,8 +133,8 @@ class TwentyFourtyEight extends Component {
       }
     }
 
-    if (dir === "down" && r !== 3) {
-      while (r !== 3 && !m[r + 1][c]) {
+    if (dir === "down" && r !== maxValue) {
+      while (r !== maxValue && !m[r + 1][c]) {
         m[r + 1][c] = m[r][c];
         m[r][c] = null;
         r = r + 1;
@@ -87,8 +143,8 @@ class TwentyFourtyEight extends Component {
 
     // c = 3;
 
-    if (dir === "right" && c !== 3) {
-      while (c !== 3 && !m[r][c + 1]) {
+    if (dir === "right" && c !== maxValue) {
+      while (c !== maxValue && !m[r][c + 1]) {
         m[r][c + 1] = m[r][c];
         m[r][c] = null;
         c = c + 1;
@@ -108,7 +164,8 @@ class TwentyFourtyEight extends Component {
     let m = mat.slice();
     let arrIndices = [];
     let t = [];
-    let score = this.state.score
+    let score = this.state.score;
+    const maxValue = mat.length - 1;
 
     if (dir === "up" || dir === "down") {
       ind.map((currEl, i) => {
@@ -130,12 +187,12 @@ class TwentyFourtyEight extends Component {
                   if (currEl.value === next.value) {
                     m[index][currEl.cIndex] = 2 * currEl.value;
                     m[currEl.rIndex][currEl.cIndex] = 2 * currEl.value; // might seem repetitive, but is needed
-                    if(2*currEl.value===2048){
+                    if (2 * currEl.value === 2048) {
                       this.setState({
                         isGameWon: true
-                      })
+                      });
                     }
-                    score = score + 2*currEl.value
+                    score = score + 2 * currEl.value;
                     m[next.rIndex][next.cIndex] = null;
                     m[index + 1][currEl.cIndex] = null; // might seem repetitive, but is needed
                     index = index + 1;
@@ -160,7 +217,7 @@ class TwentyFourtyEight extends Component {
               }
             });
           } else if (dir === "down") {
-            let index = 3; //max-rows
+            let index = maxValue; //max-rows
             let lastIndex;
 
             t.map((currEl, i) => {
@@ -169,11 +226,11 @@ class TwentyFourtyEight extends Component {
                 if (i !== lastIndex) {
                   if (currEl.value === next.value) {
                     m[index][currEl.cIndex] = 2 * currEl.value;
-                    score = score + 2*currEl.value
-                    if(2*currEl.value===2048){
+                    score = score + 2 * currEl.value;
+                    if (2 * currEl.value === 2048) {
                       this.setState({
                         isGameWon: true
-                      })
+                      });
                     }
                     m[next.rIndex][next.cIndex] = null;
                     m[index - 1][currEl.cIndex] = null;
@@ -188,6 +245,7 @@ class TwentyFourtyEight extends Component {
                 }
               } else {
                 if (i !== lastIndex) {
+                  console.log(currEl.rIndex, currEl.cIndex);
                   m[currEl.rIndex][currEl.cIndex] = null;
                   m[index][currEl.cIndex] = currEl.value;
                   if (m[index - 1]) {
@@ -207,13 +265,13 @@ class TwentyFourtyEight extends Component {
           for (let j = m[i].length - 1; j >= 0; j--) {
             if (j !== 0 && m[i][j]) {
               if (m[i][j] === m[i][j - 1]) {
-                if(2*m[i][j]===2048){
+                if (2 * m[i][j] === 2048) {
                   this.setState({
                     isGameWon: true
-                  })
+                  });
                 }
                 m[i][j] = 2 * m[i][j];
-                score = score + 2*m[i][j]
+                score = score + 2 * m[i][j];
                 m[i][j - 1] = null;
               }
             }
@@ -239,13 +297,13 @@ class TwentyFourtyEight extends Component {
           for (let j = 0; j <= m[i].length - 1; j++) {
             if (j !== m[i].length && m[i][j]) {
               if (m[i][j] === m[i][j + 1]) {
-                if(2*m[i][j]===2048){
+                if (2 * m[i][j] === 2048) {
                   this.setState({
                     isGameWon: true
-                  })
+                  });
                 }
                 m[i][j] = 2 * m[i][j];
-                score = score + 2*m[i][j]
+                score = score + 2 * m[i][j];
                 m[i][j + 1] = null;
               }
             }
@@ -269,7 +327,7 @@ class TwentyFourtyEight extends Component {
       }
     }
 
-    return score
+    return score;
   };
 
   random = (min, max) => {
@@ -297,6 +355,7 @@ class TwentyFourtyEight extends Component {
   // }
 
   insertNew = (m, init = false) => {
+    const maxValue = m.length - 1;
     let flag = init
       ? true
       : JSON.stringify(m) !== JSON.stringify(this.state.matrix);
@@ -304,11 +363,11 @@ class TwentyFourtyEight extends Component {
       if (this.containsNull(m)) {
         let value = Math.random() < 0.9 ? 2 : 4;
 
-        let rowIndex = this.random(0, 3);
-        let colIndex = this.random(0, 3);
+        let rowIndex = this.random(0, maxValue);
+        let colIndex = this.random(0, maxValue);
         while (m[rowIndex][colIndex]) {
-          rowIndex = this.random(0, 3);
-          colIndex = this.random(0, 3);
+          rowIndex = this.random(0, maxValue);
+          colIndex = this.random(0, maxValue);
         }
 
         m[rowIndex][colIndex] = value;
@@ -323,27 +382,22 @@ class TwentyFourtyEight extends Component {
     this.myRef.current.focus();
   };
 
-
-  swipeToKeyboardEmulator = (e) => {
-    const dir = e.dir.toLowerCase()
-    if(dir==="left"){
-      this.handleKeyDown({key: "ArrowLeft"})
-    } 
-    else if(dir==="right"){
-      this.handleKeyDown({key: "ArrowRight"})
+  swipeToKeyboardEmulator = e => {
+    const dir = e.dir.toLowerCase();
+    if (dir === "left") {
+      this.handleKeyDown({ key: "ArrowLeft" });
+    } else if (dir === "right") {
+      this.handleKeyDown({ key: "ArrowRight" });
+    } else if (dir === "up") {
+      this.handleKeyDown({ key: "ArrowUp" });
+    } else if (dir === "down") {
+      this.handleKeyDown({ key: "ArrowDown" });
     }
-    else if(dir==="up"){
-      this.handleKeyDown({key: "ArrowUp"})
-    }
-    else if(dir==="down"){
-      this.handleKeyDown({key: "ArrowDown"})
-    }
-  }
- 
+  };
 
   handleKeyDown = async e => {
     const { key } = e;
-    let score
+    let score;
     if (
       key === "ArrowLeft" ||
       key === "ArrowRight" ||
@@ -393,7 +447,6 @@ class TwentyFourtyEight extends Component {
         if (hasMatrixChanged) {
           this.insertNew(m);
         }
-
       } else if (key === "ArrowRight") {
         let colSorted = ind.slice().sort((a, b) => {
           if (a.cIndex > b.cIndex) {
@@ -410,12 +463,11 @@ class TwentyFourtyEight extends Component {
         score = this.merge(m, colSorted, "right");
 
         hasMatrixChanged =
-        JSON.stringify(m) !== JSON.stringify(this.state.matrix);
+          JSON.stringify(m) !== JSON.stringify(this.state.matrix);
 
-      if (hasMatrixChanged) {
-        this.insertNew(m);
-      }
-
+        if (hasMatrixChanged) {
+          this.insertNew(m);
+        }
       } else if (key === "ArrowDown") {
         ind
           .slice()
@@ -432,10 +484,9 @@ class TwentyFourtyEight extends Component {
         if (hasMatrixChanged) {
           this.insertNew(m);
         }
-
       }
 
-      if(hasMatrixChanged){
+      if (hasMatrixChanged) {
         this.setState({
           prev: this.state.matrix,
           matrix: m,
@@ -445,115 +496,202 @@ class TwentyFourtyEight extends Component {
     }
   };
 
-  onUnload = e => { // the method that will be used for both add and remove event
+  onUnload = e => {
+    // the method that will be used for both add and remove event
     e.preventDefault();
-    e.returnValue = '';
- }
-
-
-
+    e.returnValue = "";
+  };
 
   render() {
     return (
       <>
-      
-      <div
-      className="parent-container"
-      onFocus={()=>this.myRef.current.focus()}
-      >
+        <ParentContainer onFocus={() => this.myRef.current.focus()}>
+          <BtnGroup>
+            <button
+              onClick={this.undoAction}
+              className="game-btn undo-btn"
+              title="Undo last move"
+            />
+            <button
+              onClick={() =>
+                this.setState({
+                  optedForRestart: !this.state.optedForRestart,
+                  gridChange: false
+                })
+              }
+              className="game-btn refresh-btn"
+              title="Reset the game"
+            />
+            <button
+              onClick={() =>
+                this.setState({
+                  optedForRestart: false,
+                  gridChange: !this.state.gridChange
+                })
+              }
+              className="game-btn grid-btn"
+              title="Change grid size"
+            />
+          </BtnGroup>
 
-        <div className="btn-group">
-        <button onClick={this.undoAction} className="game-btn undo-btn" title="Undo last move" />
-        <button onClick={()=>this.setState({optedForRestart: true})} className="game-btn refresh-btn" title="Reset the game"/>
-        </div>
-
-        <Swipeable onSwiped={(eventData) => this.swipeToKeyboardEmulator(eventData)} preventDefaultTouchmoveEvent={true}>
-        <div
-          ref={this.myRef}
-          onBlur={()=>this.setState({focus: false})}
-          onFocus={()=>this.setState({focus: true})}
-          className="outer-box"
-          onKeyDown={e => this.handleKeyDown(e)}
-          tabIndex="0"
-        >
-          {this.state.isGameWon && !this.state.continue && <div className="game-won">
-            <div>
-            Game Won!
-            </div>
-            <div className="game-reset option" onClick={()=>this.setState({continue: true})} style={{fontSize: '20px',fontWeight: '600'}}>
-            Continue
-            </div>
-            </div>}
-
-          {this.state.isGameOver && <div className="game-won">Game Over!</div>}
-
-          {this.state.optedForRestart && 
-          <div className="game-won" style={{flexDirection: 'column'}}>
-            Restart?
-            <div style={{display: 'flex', fontSize: '50px', width: 'inherit', justifyContent: 'space-around'}}>
-              <div className="game-reset option" onClick={this.startOver}>Yes</div>
-              <div className="game-reset option" onClick={()=>this.setState({optedForRestart: false})}>No</div>
-            </div>
-            </div>
-          }
-
-
-          {this.state.matrix.map((row, i) =>
-            row.map((element, j) => (
-              <div
-                key={i + "-" + j}
-                className={`block ` + (element !== null ? `exists` : ``)}
-              >
-                <div
-                  className={
-                    `inner _` +
-                    (this.state.matrix[i][j] !== null
-                      ? this.state.matrix[i][j]
-                      : ``)
-                  }
-                >
-                  {this.state.matrix[i][j]}
-                </div>
-              </div>
-            ))
-          )}
-        </div>
-
-</Swipeable>
-        
-        <div
-        className="score-container"
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            backgroundColor: "grey",
-            margin: "10px",
-            color: "white",
-            borderRadius: "5px",
-            justifyContent: "center",
-            alignItems: "center"
-          }}
-        >
-          <div style={{ textAlign: "center", padding: "20px 5px" }}>
-            SCORE
-            <h3 style={{ margin: 0 }}>{this.state.score}</h3>
-          </div>
-          {/* <button onClick={this.undoAction}>Undo</button> */}
-          {/* <button
-            onClick={() => {
-              this.setState({
-                isGameWon: true
-              });
-            }}
+          <Swipeable
+            onSwiped={eventData => this.swipeToKeyboardEmulator(eventData)}
+            preventDefaultTouchmoveEvent={true}
           >
-            Win Game
-          </button> */}
-        </div>
-      </div>
-          {!this.state.focus && (
-            <p style={{textAlign: 'center'}}>Tap on any block to continue playing</p>
-          )}
-          </>
+            <OuterBox
+              ref={this.myRef}
+              onBlur={() => this.setState({ focus: false })}
+              onFocus={() => this.setState({ focus: true })}
+              // className="outer-box"
+              onKeyDown={e => this.handleKeyDown(e)}
+              tabIndex="0"
+            >
+              {this.state.isGameWon && !this.state.continue && (
+                <div className="game-won">
+                  <div>Game Won!</div>
+                  <div
+                    className="game-reset option"
+                    onClick={() => this.setState({ continue: true })}
+                    style={{ fontSize: "20px", fontWeight: "600" }}
+                  >
+                    Continue
+                  </div>
+                </div>
+              )}
+
+              {this.state.isGameOver && (
+                <div className="game-won">Game Over!</div>
+              )}
+
+              {this.state.optedForRestart && (
+                <div className="game-won" style={{ flexDirection: "column" }}>
+                  Restart?
+                  <div
+                    style={{
+                      display: "flex",
+                      fontSize: "50px",
+                      width: "inherit",
+                      justifyContent: "space-around"
+                    }}
+                  >
+                    <div
+                      className="game-reset option"
+                      onClick={() => this.startOver(4)}
+                    >
+                      Yes
+                    </div>
+                    <div
+                      className="game-reset option"
+                      onClick={() => this.setState({ optedForRestart: false })}
+                    >
+                      No
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {this.state.gridChange && (
+                <div>
+                  <div className="change-grid">
+                    <div className="box">
+                      <div
+                        className={
+                          `option` +
+                          (this.state.game.size === "_classic"
+                            ? ` selected`
+                            : ``)
+                        }
+                        onClick={() => this.changeGrid(4)}
+                      >
+                        Classic <br />
+                        (4x4)
+                      </div>
+                    </div>
+                    <div className="box">
+                      <div
+                        className={
+                          `option` +
+                          (this.state.game.size === "_big" ? ` selected` : ``)
+                        }
+                        onClick={() => this.changeGrid(5)}
+                      >
+                        Big <br />
+                        (5x5)
+                      </div>
+                    </div>
+                    <div className="box">
+                      <div
+                        className={
+                          `option` +
+                          (this.state.game.size === "_bigger"
+                            ? ` selected`
+                            : ``)
+                        }
+                        onClick={() => this.changeGrid(6)}
+                      >
+                        Bigger <br />
+                        (6x6)
+                      </div>
+                    </div>
+                    <div className="box">
+                      <div
+                        className={
+                          `option` +
+                          (this.state.game.size === "_huge" ? ` selected` : ``)
+                        }
+                        onClick={() => this.changeGrid(8)}
+                      >
+                        Huge <br />
+                        (8x8)
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {this.state.matrix.map((row, i) =>
+                row.map((element, j) => (
+                  <div
+                    key={i + "-" + j}
+                    className={
+                      `block ` +
+                      (element !== null ? `exists ` : ``) +
+                      this.state.game.size
+                    }
+                  >
+                    <div
+                      className={
+                        `inner _` +
+                        (this.state.matrix[i][j] !== null
+                          ? this.state.matrix[i][j]
+                          : ``)
+                      }
+                    >
+                      {this.state.matrix[i][j]}
+                    </div>
+                  </div>
+                ))
+              )}
+            </OuterBox>
+            {/* <button onClick={() => this.startOver(4)}>for 4x4</button>
+            <button onClick={() => this.startOver(5)}>for 5x5</button>
+            <button onClick={() => this.startOver(6)}>for 6x6</button>
+            <button onClick={() => this.startOver(8)}>for 8x8</button> */}
+          </Swipeable>
+
+          <ScoreContainer>
+            <ActualScore>
+              SCORE
+              <h3 style={{ margin: 0 }}>{this.state.score}</h3>
+            </ActualScore>
+          </ScoreContainer>
+        </ParentContainer>
+        {!this.state.focus && (
+          <p style={{ textAlign: "center" }}>
+            Tap on any block to continue playing
+          </p>
+        )}
+      </>
     );
   }
 }
