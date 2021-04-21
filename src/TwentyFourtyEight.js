@@ -170,19 +170,20 @@ class TwentyFourtyEight extends Component {
     const maxValue = mat.length - 1;
 
     if (dir === "up" || dir === "down") {
-      ind.map((currEl, i) => {
+      ind.forEach((currEl, i) => {
         if (!arrIndices.includes(i)) {
           t = ind.filter((x, j) => {
             if (currEl.cIndex === x.cIndex) {
               arrIndices.push(j);
               return currEl.cIndex === x.cIndex;
             }
+            return null
           });
 
           if (dir === "up") {
             let index = 0;
             let lastIndex;
-            t.map((currEl, i) => {
+            t.forEach((currEl, i) => {
               let next = t[i + 1];
               if (i !== lastIndex) {
                 if (next) {
@@ -222,7 +223,7 @@ class TwentyFourtyEight extends Component {
             let index = maxValue; //max-rows
             let lastIndex;
 
-            t.map((currEl, i) => {
+            t.forEach((currEl, i) => {
               let next = t[i + 1];
               if (next) {
                 if (i !== lastIndex) {
@@ -416,8 +417,8 @@ class TwentyFourtyEight extends Component {
 
       let m = clone(this.state.matrix);
 
-      m.map((row, i) => {
-        row.map((element, j) => {
+      m.forEach((row, i) => {
+        row.forEach((element, j) => {
           if (element !== null) {
             ind.push({ rIndex: i, cIndex: j, value: element });
           }
@@ -427,7 +428,7 @@ class TwentyFourtyEight extends Component {
       let hasMatrixChanged;
 
       if (key === "ArrowLeft") {
-        ind.map(s => {
+        ind.forEach(s => {
           this.move(m, s, "left");
         });
 
@@ -440,7 +441,7 @@ class TwentyFourtyEight extends Component {
           this.insertNew(m);
         }
       } else if (key === "ArrowUp") {
-        ind.map(s => {
+        ind.forEach(s => {
           this.move(m, s, "up");
         });
 
@@ -458,9 +459,10 @@ class TwentyFourtyEight extends Component {
           } else if (a.cIndex < b.cIndex) {
             return 1;
           }
+          return 1
         });
 
-        colSorted.map(s => {
+        colSorted.forEach(s => {
           this.move(m, s, "right");
         });
 
@@ -476,7 +478,7 @@ class TwentyFourtyEight extends Component {
         ind
           .slice()
           .reverse()
-          .map(s => {
+          .forEach(s => {
             this.move(m, s, "down");
           });
 
