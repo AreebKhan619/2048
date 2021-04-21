@@ -40,6 +40,7 @@ class TwentyFourtyEight extends Component {
       ],
       prev: [],
       score: 0,
+      prevScore: 0,
       gridChange: false,
       optedForRestart: false
       // very important below
@@ -101,6 +102,7 @@ class TwentyFourtyEight extends Component {
       matrix: m,
       prev: m,
       score: 0,
+      prevScore: 0,
       game: {
         ...this.state.game,
         size: gameObj[size]
@@ -377,7 +379,8 @@ class TwentyFourtyEight extends Component {
 
   undoAction = () => {
     this.setState({
-      matrix: this.state.prev
+      matrix: this.state.prev,
+      score: this.state.prevScore
     });
     this.myRef.current.focus();
   };
@@ -406,6 +409,7 @@ class TwentyFourtyEight extends Component {
     ) {
       let ind = [];
       // let score = this.state.score
+      let prevScore = this.state.score
 
       const clone = items =>
         items.map(item => (Array.isArray(item) ? clone(item) : item));
@@ -490,7 +494,8 @@ class TwentyFourtyEight extends Component {
         this.setState({
           prev: this.state.matrix,
           matrix: m,
-          score
+          score,
+          prevScore
         });
       }
     }
