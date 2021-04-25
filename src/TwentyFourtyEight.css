@@ -35,6 +35,8 @@
   font-size: 5vw;
 }
 
+
+
 ._classic {
   width: 150px;
   height: 150px;
@@ -246,6 +248,18 @@
   }
 }
 
+
+@media screen and (min-width: 1800px){
+  .block > .inner{
+    font-size: 3vw;
+  }
+}
+
+@media screen and (min-width: 2200px){
+  .block > .inner{
+    font-size: 2.5vw;
+  }
+}
 
 
 @media screen and (max-width: 764px) {
